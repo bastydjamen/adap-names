@@ -1,4 +1,4 @@
-// src/adap-b02/names/StringArrayName.ts
+
 
 import { DEFAULT_DELIMITER, ESCAPE_CHARACTER } from "../common/Printable";
 import { Name } from "./Name";
