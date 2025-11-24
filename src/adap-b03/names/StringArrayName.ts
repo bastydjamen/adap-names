@@ -7,21 +7,19 @@ export class StringArrayName extends AbstractName {
     protected components: string[] = [];
 
     constructor(source: string[], delimiter?: string) {
-        super();
-        throw new Error("needs implementation or deletion");
+        super(delimiter);
+
+        // copy into own array
+        this.components = [];
+        for (let i = 0; i < source.length; i++) {
+            this.components[i] = source[i];
+        }
     }
 
     public clone(): Name {
-        throw new Error("needs implementation or deletion");
+        return new StringArrayName(this.components.slice(), this.delimiter);
     }
 
-    public asString(delimiter: string = this.delimiter): string {
-        throw new Error("needs implementation or deletion");
-    }
-
-    public asDataString(): string {
-        throw new Error("needs implementation or deletion");
-    }
 
     public isEqual(other: Name): boolean {
         throw new Error("needs implementation or deletion");
@@ -39,31 +37,43 @@ export class StringArrayName extends AbstractName {
         throw new Error("needs implementation or deletion");
     }
 
+    // @methodtype get-method
     public getNoComponents(): number {
-        throw new Error("needs implementation or deletion");
+        return this.components.length;
     }
 
+    // @methodtype get-method
     public getComponent(i: number): string {
-        throw new Error("needs implementation or deletion");
+        return this.components[i];
     }
 
-    public setComponent(i: number, c: string) {
-        throw new Error("needs implementation or deletion");
+    /** Expects that new Name component c is properly masked */
+    // @methodtype set-method
+    public setComponent(i: number, c: string): void {
+        this.components[i] = c;
     }
 
-    public insert(i: number, c: string) {
-        throw new Error("needs implementation or deletion");
+    // @methodtype command-method
+    public insert(i: number, c: string): void {
+        // shift elements to the right
+        for (let j = this.components.length; j > i; j--) {
+            this.components[j] = this.components[j - 1];
+        }
+        this.components[i] = c;
     }
 
-    public append(c: string) {
-        throw new Error("needs implementation or deletion");
+    // @methodtype command-method
+    public append(c: string): void {
+        this.components[this.components.length] = c;
+    }
+    // @methodtype command-method
+    public remove(i: number): void {
+        // Shift all elements after i to the left
+        for (let j = i; j < this.components.length - 1; j++) {
+            this.components[j] = this.components[j + 1];
+        }
+        // Remove the last (now duplicate) element
+        this.components.length = this.components.length - 1;
     }
 
-    public remove(i: number) {
-        throw new Error("needs implementation or deletion");
-    }
-
-    public concat(other: Name): void {
-        throw new Error("needs implementation or deletion");
-    }
 }

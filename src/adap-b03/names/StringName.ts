@@ -6,66 +6,120 @@ export class StringName extends AbstractName {
 
     protected name: string = "";
     protected noComponents: number = 0;
+    protected components: string[] = [];
 
     constructor(source: string, delimiter?: string) {
-        super();
-        throw new Error("needs implementation or deletion");
+        super(delimiter);
+        this.name = source;
+        this.components = [];
+
+        if (source === "") {
+            // special case: 1 empty component
+            this.components = [""];
+            this.noComponents = 1;
+        } else {
+            this.components = this.splitMasked(source, this.delimiter);
+            this.noComponents = this.components.length;
+        }
+    }
+
+    protected splitMasked(masked: string, delimiter: string): string[] {
+        let result: string[] = [];
+        let current: string = "";
+
+        let i = 0;
+        while (i < masked.length) {
+            const ch = masked.charAt(i);
+
+            if (ch === ESCAPE_CHARACTER) {
+                // Take '\' and next char as part of this component
+                if (i + 1 < masked.length) {
+                    const next = masked.charAt(i + 1);
+                    current = current + ch + next;
+                    i = i + 2;
+                } else {
+                    // trailing backslash
+                    current = current + ch;
+                    i = i + 1;
+                }
+            } else if (ch === delimiter) {
+                // unescaped delimiter -> end of component
+                result[result.length] = current;
+                current = "";
+                i = i + 1;
+            } else {
+                // normal char
+                current = current + ch;
+                i = i + 1;
+            }
+        }
+
+        // last component
+        result[result.length] = current;
+
+        return result;
+    }
+
+    // @methodtype command-method
+    protected updateNameFromComponents(): void {
+        let newName: string = "";
+
+        for (let i = 0; i < this.components.length; i++) {
+            newName = newName + this.components[i];
+            if (i < this.components.length - 1) {
+                newName = newName + this.delimiter;
+            }
+        }
+
+        this.name = newName;
+        this.noComponents = this.components.length;
     }
 
     public clone(): Name {
-        throw new Error("needs implementation or deletion");
+        return new StringName(this.name, this.delimiter);
     }
 
-    public asString(delimiter: string = this.delimiter): string {
-        throw new Error("needs implementation or deletion");
-    }
-
-    public asDataString(): string {
-        throw new Error("needs implementation or deletion");
-    }
-
-    public isEqual(other: Name): boolean {
-        throw new Error("needs implementation or deletion");
-    }
-
-    public getHashCode(): number {
-        throw new Error("needs implementation or deletion");
-    }
-
-    public isEmpty(): boolean {
-        throw new Error("needs implementation or deletion");
-    }
-
-    public getDelimiterCharacter(): string {
-        throw new Error("needs implementation or deletion");
-    }
-
+    // @methodtype get-method
     public getNoComponents(): number {
-        throw new Error("needs implementation or deletion");
+        return this.noComponents;
     }
 
-    public getComponent(i: number): string {
-        throw new Error("needs implementation or deletion");
+    // @methodtype get-method
+    public getComponent(n: number): string {
+        return this.components[n];
     }
 
-    public setComponent(i: number, c: string) {
-        throw new Error("needs implementation or deletion");
+    // @methodtype set-method
+    public setComponent(n: number, c: string): void {
+        this.components[n] = c;
+        this.updateNameFromComponents();
     }
 
-    public insert(i: number, c: string) {
-        throw new Error("needs implementation or deletion");
+    // @methodtype command-method
+    public insert(n: number, c: string): void {
+        // Shift elements to the right from the end
+        for (let j = this.components.length; j > n; j--) {
+            this.components[j] = this.components[j - 1];
+        }
+        this.components[n] = c;
+        this.updateNameFromComponents();
     }
 
-    public append(c: string) {
-        throw new Error("needs implementation or deletion");
+    // @methodtype command-method
+    public append(c: string): void {
+        this.components[this.components.length] = c;
+        this.updateNameFromComponents();
     }
 
-    public remove(i: number) {
-        throw new Error("needs implementation or deletion");
+    // @methodtype command-method
+    public remove(n: number): void {
+        // Shift elements to the left
+        for (let j = n; j < this.components.length - 1; j++) {
+            this.components[j] = this.components[j + 1];
+        }
+        this.components.length = this.components.length - 1;
+        this.updateNameFromComponents();
     }
 
-    public concat(other: Name): void {
-        throw new Error("needs implementation or deletion");
-    }
 
 }
