@@ -25,18 +25,6 @@ export class StringArrayName extends AbstractName {
         throw new Error("needs implementation or deletion");
     }
 
-    public getHashCode(): number {
-        throw new Error("needs implementation or deletion");
-    }
-
-    public isEmpty(): boolean {
-        throw new Error("needs implementation or deletion");
-    }
-
-    public getDelimiterCharacter(): string {
-        throw new Error("needs implementation or deletion");
-    }
-
     // @methodtype get-method
     public getNoComponents(): number {
         return this.components.length;
