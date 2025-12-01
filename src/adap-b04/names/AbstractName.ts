@@ -58,31 +58,38 @@ export abstract class AbstractName implements Name {
 
     // @methodtype get-method
     public asString(delimiter: string = this.delimiter): string {
+        // PRE: delimiter must be a single character
         IllegalArgumentException.assert(
-            delimiter != null && true && delimiter.length === 1,
+            delimiter != null && delimiter.length === 1,
             "delimiter must be a single character"
         );
-        let result: string = "";
+
+        let result = "";
 
         for (let i = 0; i < this.getNoComponents(); i++) {
-            let maskedComp = this.getComponent(i);
+            const maskedComp = this.getComponent(i);
 
-            // Remove escaping for this instance's delimiter
-            let clean = unmaskForDelimiter(maskedComp, this.delimiter);
+            // 1) Unmask using the *internal* delimiter of this name
+            const unmasked = unmaskForDelimiter(maskedComp, this.delimiter);
 
-            result = result + clean;
+            // 2) Re-mask for the *output* delimiter we want to print with
+            const remasked = maskForDelimiter(unmasked, delimiter);
+
+            result += remasked;
 
             // Put delimiter between components, not after last one
             if (i < this.getNoComponents() - 1) {
-                result = result + delimiter;
+                result += delimiter;
             }
         }
+
         MethodFailedException.assert(
             result !== null && result !== undefined,
             "asString failed"
         );
         return result;
     }
+
 
     public toString(): string {
         return this.asDataString();
